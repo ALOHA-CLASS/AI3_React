@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import List from '../../components/board/List'
 import { useState } from 'react'
 import * as boards from '../../apis/boards'
+import { useLocation } from 'react-router-dom'
 
 const ListContainer = () => {
 
@@ -25,13 +26,32 @@ const ListContainer = () => {
     setPagination(pagination)
   }
 
+  // URL 가져오는 방법
+  const location = useLocation()
+
+  // 페이지 번호 클릭 ➡ URL page 파라미터 변경
+  const updatePage = () => {
+    const query = new URLSearchParams(location.search)
+    const newPage = query.get("page") ?? 1
+    const newSize = query.get("size") ?? 10
+    console.log(`newPage : ${newPage}`);
+    console.log(`newSize : ${newSize}`);
+    setPage(newPage)
+    setSize(newSize)
+  }
+
   // ❓
   useEffect(() => {
     getList()
   }, [page, size])
   // 의존성배열 [page, size]
   // : page, size 바뀔 때마다 재실행
-  
+
+  useEffect(() => {
+    updatePage()
+
+  }, [location.search])
+  // URL 쿼리스트링이 바뀔때 마다 재실행
 
   return (
     <>

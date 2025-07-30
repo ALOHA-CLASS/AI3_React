@@ -1,3 +1,4 @@
+-- Active: 1750388006843@@127.0.0.1@3306@aloha
 DROP TABLE IF EXISTS `boards`;
 
 CREATE TABLE `boards` (
@@ -9,3 +10,12 @@ CREATE TABLE `boards` (
 	`created_at`	TIMESTAMP	NOT NULL	DEFAULT CURRENT_TIMESTAMP	COMMENT '등록일자',
 	`updated_at`	TIMESTAMP	NOT NULL	DEFAULT CURRENT_TIMESTAMP	COMMENT '수정일자'
 ) COMMENT '게시판';
+
+
+-- 데이터 추가
+INSERT INTO boards (id, title, writer, content)
+SELECT UUID(), title, writer, content
+FROM boards
+;
+
+

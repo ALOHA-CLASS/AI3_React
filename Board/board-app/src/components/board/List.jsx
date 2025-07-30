@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import * as format from '../../utils/format'
 // import './css/List.css'
 import styles from './css/List.module.css'
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
@@ -15,6 +16,26 @@ const List = ({ list, pagination }) => {
   //   { no: 4, id: 'board4', title: '제목4', writer: '작성자4', content: '내용4', createdAt: '2025-07-30 10:55:25' },
   //   { no: 5, id: 'board5', title: '제목5', writer: '작성자5', content: '내용5', createdAt: '2025-07-30 10:55:25' },
   // ]
+
+  // 🧊 state
+  const [pageList, setPageList] = useState([])
+
+  // 페이지 번호 리스트 생성
+  const createPageList = () => {
+    let newPageList = []
+    for (let i = pagination.start; i <= pagination.end; i++) {
+      newPageList.push(i)
+    }
+    setPageList(newPageList)
+  }
+
+  useEffect(() => {
+    createPageList()
+
+  }, [pagination])
+
+
+
 
   return (
     <>
@@ -53,7 +74,7 @@ const List = ({ list, pagination }) => {
                     </td>
                     <td>{ board.writer }</td>
                     <td>
-                        { board.createdAt }
+                        { format.formatDate(board.createdAt) }
                     </td>
                   </tr>
                 )
@@ -71,9 +92,16 @@ const List = ({ list, pagination }) => {
           <Link to={`/boards?page=${pagination.prev}`} className='btn-page'>
             <KeyboardArrowLeftIcon />
           </Link>
-          <Link to={`/boards?page`} className='btn-page'>1</Link>
-          <Link to={`/boards?page`} className='btn-page'>2</Link>
-          <Link to={`/boards?page`} className='btn-page'>3</Link>
+          {
+            pageList.map( page => (
+              <Link 
+                  to={`/boards?page=${page}&size=${pagination.size}`}
+                  className={'btn-page ' + (page == pagination.page && 'active')}
+                >
+                {page}
+              </Link>
+            ))
+          }
           <Link to={`/boards?page=${pagination.next}`} className='btn-page'>
             <KeyboardArrowRightIcon />
           </Link>
