@@ -1,11 +1,14 @@
 package com.aloha.board.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +18,7 @@ import com.aloha.board.mapper.FileMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -136,12 +140,48 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public int upload(List<Files> fileList) throws Exception {
-
+        int result = 0;
+        if( fileList == null || fileList.isEmpty() )
+            return result;
+        
+        for (Files file : fileList) {
+            result += (upload(file) ? 1 : 0);
+        }
+        return result;
     }
 
     @Override
     public boolean download(String id, HttpServletResponse response) throws Exception {
+        Files file = fileMapper.selectById(id);
 
+        // 파일이 없으면
+        if( file == null ) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return false;
+        }
+
+        // 파일 입력
+        String fileName = file.getOriginName();     // 파일명 (다운로드시-원본파일명)
+        String filePath = file.getFilePath();       // 파일 경로
+        File downloadFile = new File(filePath);
+        FileInputStream fis = new FileInputStream(downloadFile);
+
+        // 파일 출력
+        ServletOutputStream sos = response.getOutputStream();
+
+        // 파일 다운로드를 위한 응답 헤더 세팅
+        // - Content-Type           : application/octet-stream
+        // - Content-Disposition    : attachment; filename="파일명.확장자"
+        fileName = URLEncoder.encode(fileName, "UTF-8");
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        response.setHeader("Content-Disposition", 
+                          "attachment; filename\"" + fileName + " \"");
+        
+        // 다운로드
+        boolean result = FileCopyUtils.copy(fis, sos) > 0;
+        fis.close();
+        sos.close();
+        return result;
     }
 
     @Override
