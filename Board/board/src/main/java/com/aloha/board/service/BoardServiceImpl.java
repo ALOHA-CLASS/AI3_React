@@ -65,7 +65,7 @@ public class BoardServiceImpl implements BoardService {
 
         List<Files> uploadFileList = new ArrayList<>();
 
-        MultipartFile mainFile = board.getMainfile();
+        MultipartFile mainFile = board.getMainFile();
         if( mainFile != null && !mainFile.isEmpty() ) {
             Files mainFileInfo = new Files();
             mainFileInfo.setPTable(pTable);

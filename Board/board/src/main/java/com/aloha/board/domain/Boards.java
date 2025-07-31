@@ -18,7 +18,7 @@ public class Boards {
     private Date updatedAt; // 수정일자
 
     // 📄 파일
-    private MultipartFile mainfile;
+    private MultipartFile mainFile;
     private List<MultipartFile> files;
 
     // 파일정보
