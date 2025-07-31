@@ -186,42 +186,85 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public List<Files> listByParent(Files file) {
-
+        return fileMapper.listByParent(file);
     }
 
     @Override
-    public int deleteByParent(Files file) {
+    public int deleteByParent(Files file) { 
+        List<Files> fileList = fileMapper.listByParent(file);
 
+        // 파일 삭제
+        for (Files deleteFile : fileList) {
+            delete(deleteFile);
+        }
+
+        // DB 삭제
+        return fileMapper.deleteByParent(file);
     }
 
+    // noList : "1,2,3"
     @Override
     public int deleteFiles(String noList) {
+        if( noList == null || noList.isEmpty() ) return 0;
 
+        int count = 0;
+        String[] nos = noList.split(",");
+        for (String noStr : nos) {
+            int no = Integer.parseInt(noStr); 
+            count += ( delete(no) ? 1 : 0 );
+        }
+        log.info("파일 " + count + "개를 삭제 하였습니다.");
+        return count;
     }
 
     @Override
     public int deleteFilesById(String idList) {
+        if( idList == null || idList.isEmpty() ) return 0;
 
+        int count = 0;
+        String[] ids = idList.split(",");
+        for (String id : ids) {
+            count += ( deleteById(id) ? 1 : 0 );
+        }
+        log.info("파일 " + count + "개를 삭제 하였습니다.");
+        return count;
     }
 
     @Override
     public int deleteFileList(List<Long> noList) {
+        if( noList == null || noList.isEmpty() ) return 0;
 
+        for (Long no : noList) {
+            Files file = select(no.intValue());
+            delete(file);
+        }
+        
+        int count = fileMapper.deleteFileList(noList);
+        log.info("파일 " + count + "개를 삭제 하였습니다.");
+        return count;
     }
 
     @Override
     public int deleteFileListById(List<String> idList) {
+        if( idList == null || idList.isEmpty() ) return 0;
 
+        for (String id : idList) {
+            Files file = selectById(id);
+            delete(file);
+        }
+        int count = fileMapper.deleteFileListById(idList);
+        log.info("파일 " + count + "개를 삭제 하였습니다.");
+        return count;
     }
 
     @Override
     public Files selectByType(Files file) {
-
+        return fileMapper.selectByType(file);
     }
 
     @Override
     public List<Files> listByType(Files file) {
-
+        return fileMapper.listByType(file);
     }
 
     

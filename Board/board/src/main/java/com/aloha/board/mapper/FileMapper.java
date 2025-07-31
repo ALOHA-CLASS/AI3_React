@@ -1,10 +1,8 @@
 package com.aloha.board.mapper;
 
 import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import com.aloha.board.domain.Files;
 
 @Mapper
